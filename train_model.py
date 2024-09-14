@@ -30,9 +30,9 @@ for student_name in os.listdir(dataset_folder):
 
 
 # Train an SVM classifier with the collected face encodings
-clf = svm.SVC(gamma='scale', probability=True)
-clf.fit(encodings, names)
+model = svm.SVC(gamma='scale', probability=True)
+model.fit(encodings, names)
 
 # Save the trained model
 with open('face_recognition_model.pkl', 'wb') as model_file:
-    pickle.dump(clf, model_file)
+    pickle.dump(model, model_file)
