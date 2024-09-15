@@ -14,11 +14,9 @@ while True:
     # Capture a single frame from the webcam
     ret, frame = video_capture.read()
 
+    # small_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
     # Convert the frame from BGR (used by OpenCV) to RGB (used by face_recognition)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    # Gray Frame
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Detect faces in the current frame
     face_locations = face_recognition.face_locations(rgb_frame)
