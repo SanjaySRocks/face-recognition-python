@@ -17,6 +17,9 @@ while True:
     # Convert the frame from BGR (used by OpenCV) to RGB (used by face_recognition)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+    # Gray Frame
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
     # Detect faces in the current frame
     face_locations = face_recognition.face_locations(rgb_frame)
     face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
@@ -29,7 +32,13 @@ while True:
         name = clf.predict(face_encoding)[0]
 
         # print("Predicted Name:", name)
+        probabilities = clf.predict_proba(face_encoding)[0]
 
+        # Get the probability of the predicted class (matching face)
+        confidence = np.max(probabilities)
+
+        # Set a confidence threshold (e.g., 0.6 or 60%)
+        threshold = 0.6
 
         # Draw a rectangle around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
