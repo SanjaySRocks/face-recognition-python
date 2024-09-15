@@ -1,0 +1,4 @@
+opencv-python
+face-recognition
+numpy==1.23.5
+scikit-learn
