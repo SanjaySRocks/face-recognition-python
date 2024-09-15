@@ -1,7 +1,7 @@
 import cv2
 
 # Load the pre-trained face detection model
-face_cap = cv2.CascadeClassifier(r"C:\Users\sanjay\Documents\GitHub\face-recognition-python\env\Lib\site-packages\cv2\data\haarcascade_frontalface_default.xml")
+face_cap = cv2.CascadeClassifier(r".\env\Lib\site-packages\cv2\data\haarcascade_frontalface_default.xml")
 
 # Start capturing video from the webcam
 video_cap = cv2.VideoCapture(0)
