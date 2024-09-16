@@ -1,10 +1,10 @@
 import os
 import face_recognition
-from sklearn import svm
 import pickle
 
 # Path to the dataset folder containing student images
-dataset_folder = "dataset"
+dataset_folder = "dataset.students"
+model_filename = "face_recoginition_students.pkl"
 
 # Create empty lists to store encodings and names
 encodings = []
@@ -18,7 +18,7 @@ for student_name in os.listdir(dataset_folder):
     for img_filename in os.listdir(student_folder):
         img_path = os.path.join(student_folder, img_filename)
         
-        print(img_path)
+        print("Processing: ",img_path)
         
         # Load the image and encode the face
         img = face_recognition.load_image_file(img_path)
@@ -28,11 +28,8 @@ for student_name in os.listdir(dataset_folder):
             encodings.append(img_encodings[0])  # Only take the first encoding (assuming one face per image)
             names.append(student_name)
 
-
-# Train an SVM classifier with the collected face encodings
-model = svm.SVC(gamma='scale', probability=True)
-model.fit(encodings, names)
+encodingWithKnownNames = [encodings, names]
 
 # Save the trained model
-with open('face_recognition_model.pkl', 'wb') as model_file:
-    pickle.dump(model, model_file)
+with open(model_filename, 'wb') as model_file:
+    pickle.dump(encodingWithKnownNames, model_file)
