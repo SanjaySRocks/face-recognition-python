@@ -4,16 +4,12 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import pickle
 
-# Load the trained SVM model from the pickle file
-with open('face_recognition_model.pkl', 'rb') as model_file:
-    clf = pickle.load(model_file)
+# Load the trained model
+with open('face_recognition_students.pkl', 'rb') as model_file:
+    encodingWithKnownNames = pickle.load(model_file)
 
-# Define function to predict the name based on face encoding
-def predict_name(face_encoding):
-    # Predict the class label for the face encoding
-    prediction = clf.predict([face_encoding])
-    
-    return prediction[0]
+encodeListKnown, names = encodingWithKnownNames
+
 
 # Load the input image
 input_image_path = "input_image.jpg"
@@ -37,18 +33,57 @@ except IOError:
     font = ImageFont.load_default()
 
 for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-    # Predict the name using the SVM classifier
-    name = predict_name(face_encoding)
-        
+    
+    matches = face_recognition.compare_faces(encodeListKnown, face_encoding)
+    faceDis = face_recognition.face_distance(encodeListKnown, face_encoding)
+
+    matchIndex = np.argmin(faceDis)
+
+    # print(matches)
+    # print(faceDis)
+
+
+    if matches[matchIndex]:
+        name = names[matchIndex]
+    else:
+        name = "Unknown"
+
     # Draw a rectangle around the face
     draw.rectangle(((left, top), (right, bottom)), outline="red", width=3)
-    # Draw the label with the name below the rectangle
-    draw.text((left, bottom + 10), name, fill="red", font=font)
+
+    # Calculate text size
+    text_bbox = draw.textbbox((left, bottom + 10), name, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+
+    # Draw background rectangle for text with blue color
+    draw.rectangle(((left, bottom + 10), (left + text_width, bottom + 10 + text_height)), fill="red")
+
+    # Draw the label with the name below the rectangle with white text
+    draw.text((left, bottom + 10), name, fill="white", font=font)
 
 # Convert Pillow image back to OpenCV format
 final_image = np.array(pil_image)
 
+# Resize image to fit within the window while preserving the aspect ratio
+max_width = 1024  # Maximum width of the display window
+max_height = 1024  # Maximum height of the display window
+height, width, _ = final_image.shape
+aspect_ratio = width / height
+
+if width > max_width or height > max_height:
+    if width > height:
+        new_width = max_width
+        new_height = int(max_width / aspect_ratio)
+    else:
+        new_height = max_height
+        new_width = int(max_height * aspect_ratio)
+
+    final_image_resized = cv2.resize(final_image, (new_width, new_height))
+else:
+    final_image_resized = final_image
+
 # Display the image with OpenCV
-cv2.imshow("Face Recognition", final_image)
+cv2.imshow("Face Recognition", final_image_resized)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

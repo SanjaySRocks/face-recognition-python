@@ -4,8 +4,10 @@ import pickle
 import numpy as np
 
 # Load the trained SVM model
-with open('face_recognition_model.pkl', 'rb') as model_file:
-    clf = pickle.load(model_file)
+with open('face_recognition_students.pkl', 'rb') as model_file:
+    encodingWithKnownNames = pickle.load(model_file)
+
+encodeListKnown, names = encodingWithKnownNames
 
 # Initialize the webcam
 video_capture = cv2.VideoCapture(0)
@@ -21,22 +23,21 @@ while True:
     # Detect faces in the current frame
     face_locations = face_recognition.face_locations(rgb_frame)
     face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-
+    
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-        # Use the trained classifier to predict the student's name
-        # print("Face Encoding:", face_encoding)
+        
+        matches = face_recognition.compare_faces(encodeListKnown, face_encoding)
+        faceDis = face_recognition.face_distance(encodeListKnown, face_encoding)
 
-        face_encoding = np.array(face_encoding).reshape(1, -1)  # Reshape for the SVM model
-        name = clf.predict(face_encoding)[0]
+        matchIndex = np.argmin(faceDis)
 
-        # print("Predicted Name:", name)
-        probabilities = clf.predict_proba(face_encoding)[0]
+        print(matches)
+        print(faceDis)
 
-        # Get the probability of the predicted class (matching face)
-        confidence = np.max(probabilities)
+        name = "Unknown"
 
-        # Set a confidence threshold (e.g., 0.6 or 60%)
-        threshold = 0.6
+        if matches[matchIndex]:
+            name = names[matchIndex]
 
         # Draw a rectangle around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)

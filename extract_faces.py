@@ -32,6 +32,6 @@ def extract_faces(input_image_path, output_folder, new_size=(128, 128)):
 # Usage
 input_image_path = 'input_image.jpg'  # Replace with the path to your input image file
 output_folder = 'output_faces'  # Replace with the path to your desired output folder
-new_size = (200, 200)  # Desired size for the resized face images
+new_size = (256, 256)  # Desired size for the resized face images
 
 extract_faces(input_image_path, output_folder, new_size)
